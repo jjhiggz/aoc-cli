@@ -24,16 +24,16 @@ Then just run the "lets-go" script in your package.json to setup for the current
 npm run
 ```
 
-If you want to setup for a different day you can pass in the `year`, `day`,`environment`,`openEditorToFolder` as arguments like so
+If you want to setup for a different day you can pass in the `year`, `day`,`environment`,`openInEditor` as arguments like so
 
 ```sh
-npx tsx index.ts --year=2019 --day=1 --environment=bun --openEditorToFolder=false
+npx tsx index.ts --year=2019 --day=1 --environment=bun --openInEditor=false
 ```
 
 or in bun
 
 ```sh
-bun index.ts --year=2019 --day=1 --environment=bun  --openEditorToFolder=false
+bun index.ts --year=2019 --day=1 --environment=bun  --openInEditor=false
 ```
 
 That's it! You're ready to go!

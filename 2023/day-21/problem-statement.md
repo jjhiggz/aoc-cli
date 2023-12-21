@@ -6,7 +6,7 @@
 *   [\[Shop\]](https://teespring.com/stores/advent-of-code)
 *   [\[Log In\]](/2023/auth/login)
 
-   int y=[2023](/2023);
+   0xffff&[2023](/2023)
 =======================
 
 *   [\[Calendar\]](/2023)
@@ -17,7 +17,7 @@
 
 Our [sponsors](/2023/sponsors) help make Advent of Code possible:
 
-[Kotlin by JetBrains](https://kotlinlang.org/) - Jingle bells, Kotlin pals, coding all the way! Solve puzzles, catch our daily livestreams for expert guidance, embrace the joy of Kotlin, and engage with a fantastic community. Happy holidays and happy coding!
+[Fresha](https://www.fresha.com/) - Fresha's festive code spree, under the tech tree!
 
 \--- Day 21: Step Counter ---
 -----------------------------

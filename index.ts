@@ -6,7 +6,16 @@ import { getDefaultEnvironment } from "./get-default-environment";
 
 const argsSchema = z
   .object({
-    openEditorToFolder: z.coerce.boolean().optional().default(true),
+    openInEditor: z
+      .preprocess((arg, ctx) => {
+        if (arg === "false") return false;
+        if (arg === "f") return "false";
+        if (arg === "t") return "true";
+        if (arg === "true") return "true";
+        return true;
+      }, z.boolean())
+      .optional()
+      .default(true),
     month: z.coerce
       .number()
       .min(1)
@@ -19,12 +28,7 @@ const argsSchema = z
       .max(31)
       .optional()
       .default(new Date().getDate()),
-    year: z.coerce
-      .number()
-      .min(2015)
-      .max(2023)
-      .optional()
-      .default(new Date().getFullYear()),
+    year: z.coerce.number().optional().default(new Date().getFullYear()),
     environment: z
       .enum(["bun", "vitest"])
       .optional()
@@ -71,7 +75,7 @@ const run = async () => {
     environment: args.environment,
   });
 
-  if (args.openEditorToFolder) {
+  if (args.openInEditor) {
     execSync(`$EDITOR ${dayPath}`);
   }
 };
