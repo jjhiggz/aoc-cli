@@ -1,15 +1,39 @@
 # advent-cli
 
-To install dependencies:
+- advent-cli is a tool to setup a new day for advent of code.
 
-```bash
-bun install
+## Project Setup
+
+- Clone the repo or use it as a template
+
+If you want to use bun run...
+
+```
+bun i
 ```
 
-To run:
+If you want to use node (with vitest) run it with your package manager of choice
 
-```bash
-bun run index.ts
+```
+npm i
 ```
 
-This project was created using `bun init` in bun v1.0.14. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+Then just run the "lets-go" script in your package.json to setup for the current day
+
+```
+npm run
+```
+
+If you want to setup for a different day you can pass in the `year`, `day`,`environment`,`openEditorToFolder` as arguments like so
+
+```sh
+npx tsx index.ts --year=2019 --day=1 --environment=bun --openEditorToFolder=false
+```
+
+or in bun
+
+```sh
+bun index.ts --year=2019 --day=1 --environment=bun  --openEditorToFolder=false
+```
+
+That's it! You're ready to go!

@@ -1,13 +1,34 @@
 import { ensureFoldersExist } from "./ensure-folders-exist";
+import { execSync } from "child_process";
 import { buildFiles } from "./build-files";
 import { z } from "zod";
+import { getDefaultEnvironment } from "./get-default-environment";
 
 const argsSchema = z
   .object({
-    month: z.coerce.number().min(1).max(12).optional(),
-    day: z.coerce.number().min(1).max(31).optional(),
-    year: z.coerce.number().min(2015).max(2023).optional(),
-    environment: z.enum(["bun", "vitest"]).optional().default("bun"),
+    openEditorToFolder: z.coerce.boolean().optional().default(true),
+    month: z.coerce
+      .number()
+      .min(1)
+      .max(12)
+      .optional()
+      .default(new Date().getMonth()),
+    day: z.coerce
+      .number()
+      .min(1)
+      .max(31)
+      .optional()
+      .default(new Date().getDate()),
+    year: z.coerce
+      .number()
+      .min(2015)
+      .max(2023)
+      .optional()
+      .default(new Date().getFullYear()),
+    environment: z
+      .enum(["bun", "vitest"])
+      .optional()
+      .default(await getDefaultEnvironment()),
   })
   .strict();
 
@@ -24,15 +45,12 @@ const args = argsSchema.parse(
   )
 );
 
-const defaultMonth = new Date().getMonth();
-const isDecember = defaultMonth === 11;
-const defaultDay = isDecember ? new Date().getDate() : 1;
-const defaultYear = new Date().getFullYear();
-
 // todo make these work with command line
-const day = args.day ?? defaultDay;
-const month = args.month ?? defaultMonth;
-const year = args.year ?? defaultYear;
+const day = args.day;
+const month = args.month;
+const year = args.year;
+
+console.log(args);
 
 const yearPath = `${year}`;
 const dayPath = `${yearPath}/day-${day}`;
@@ -52,6 +70,10 @@ const run = async () => {
     yearPath,
     environment: args.environment,
   });
+
+  if (args.openEditorToFolder) {
+    execSync(`$EDITOR ${dayPath}`);
+  }
 };
 
 run();

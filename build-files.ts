@@ -1,5 +1,4 @@
 import { features } from "./features";
-import { execSync } from "child_process";
 import { getDataForDay } from "./getDataForDay";
 import { writeFile } from "fs/promises";
 import { solutionTemplate } from "./templates/solution.template";
@@ -64,6 +63,4 @@ export const buildFiles = async ({
       encoding: "utf-8",
     }
   ).catch(() => null);
-
-  execSync(`$EDITOR ${dayPath}`);
 };

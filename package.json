@@ -2,6 +2,9 @@
   "name": "advent-cli",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "lets-go": "tsx index.ts"
+  },
   "devDependencies": {
     "@types/jsdom": "^21.1.6",
     "@types/turndown": "^5.0.4",
