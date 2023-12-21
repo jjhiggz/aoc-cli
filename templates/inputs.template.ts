@@ -1,14 +1,14 @@
 // The imports for the txt inputs
 export const getFileImports = ({
-  library,
+  environment,
   year,
   day,
 }: {
-  library: "bun" | "vitest";
+  environment: "bun" | "vitest";
   year: number;
   day: number;
 }) => {
-  switch (library) {
+  switch (environment) {
     case "bun":
       return `
                 const folderPath = import.meta.dir

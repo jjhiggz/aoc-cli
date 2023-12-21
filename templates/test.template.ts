@@ -16,7 +16,7 @@ export const getTestingUtils = (library: "bun" | "vitest") => {
 // import the functions that you will be testing
 export const getFunctionImports = ({
   library,
-  // year,
+  year,
   day,
 }: {
   library: "bun" | "vitest";
@@ -29,16 +29,16 @@ export const getFunctionImports = ({
 // This will be the test file
 export const testTemplate = ({
   day,
-  library,
+  environment,
   year,
 }: {
   day: number;
-  library: "bun" | "vitest";
+  environment: "bun" | "vitest";
   year: number;
 }) => {
   const beforeFormat = [
-    getFunctionImports({ library, day, year }),
-    getTestingUtils(library),
+    getFunctionImports({ library: environment, day, year }),
+    getTestingUtils(environment),
     `
     import { inputs } from "./inputs";
     const {exampleInput, realInput} = inputs

@@ -5,11 +5,7 @@ import { format } from "prettier";
 // For example I have a "JonMatrix" class that I can dump in "/aoc-solutsions"
 // but when I am working its much more convenient to open "/aoc-solutions/2023/day-1"
 // so I don't have to flip through a bunch of files
-export const tsConfigTemplate = ({
-  environment,
-}: {
-  environment: "node" | "bun";
-}) => {
+export const tsConfigTemplate = () => {
   return format(
     `
 {

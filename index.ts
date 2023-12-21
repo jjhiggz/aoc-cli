@@ -1,13 +1,28 @@
-import { JSDOM } from "jsdom";
-import { execSync } from "node:child_process";
-import turndown from "turndown";
-import { features } from "./features";
-import { mkdir, writeFile, readdir } from "fs/promises";
-import { solutionTemplate } from "./templates/solution.template";
-import { testTemplate } from "./templates/test.template";
-import { tsConfigTemplate } from "./templates/tsconfig.template";
-import { format } from "prettier";
-import { getFileImports } from "./templates/inputs.template";
+import { ensureFoldersExist } from "./ensure-folders-exist";
+import { buildFiles } from "./build-files";
+import { z } from "zod";
+
+const argsSchema = z
+  .object({
+    month: z.coerce.number().min(1).max(12).optional(),
+    day: z.coerce.number().min(1).max(31).optional(),
+    year: z.coerce.number().min(2015).max(2023).optional(),
+    environment: z.enum(["bun", "vitest"]).optional().default("bun"),
+  })
+  .strict();
+
+const args = argsSchema.parse(
+  process.argv.reduce(
+    (acc, arg) => {
+      if (!arg.startsWith("--")) return acc;
+      const sanitized = arg.replace("--", "");
+      const [key, value] = sanitized.split("=");
+
+      return { ...acc, [key]: value };
+    },
+    {} as Record<string, string>
+  )
+);
 
 const defaultMonth = new Date().getMonth();
 const isDecember = defaultMonth === 11;
@@ -15,100 +30,28 @@ const defaultDay = isDecember ? new Date().getDate() : 1;
 const defaultYear = new Date().getFullYear();
 
 // todo make these work with command line
-const day = defaultDay;
-const month = defaultMonth;
-const year = 2023;
-
-const getDataForDay = async (day: number, year: number) => {
-  const text = await fetch(`https://adventofcode.com/${year}/day/${day}`).then(
-    (response) => response.text()
-  );
-  const document = new JSDOM(text).window.document;
-
-  const $codes = document.querySelectorAll("code");
-
-  return {
-    markdown: new turndown({}).turndown(
-      document.querySelector("body")?.innerHTML || ""
-    ),
-  };
-};
-
-if (features.buildMarkdownFromDay) {
-  const data = await getDataForDay(day, year);
-  await writeFile("", data.markdown, { encoding: "utf-8" });
-}
-
-const doesYearExist = await readdir(yearPath + "/")
-  .then((result) => {
-    return true;
-  })
-  .catch(() => false);
+const day = args.day ?? defaultDay;
+const month = args.month ?? defaultMonth;
+const year = args.year ?? defaultYear;
 
 const yearPath = `${year}`;
 const dayPath = `${yearPath}/day-${day}`;
-const indexFile = `${dayPath}/index.ts`;
 
-const doesDayExist = await readdir(dayPath + "/")
-  .then(() => true)
-  .catch(() => false);
-
-if (!doesYearExist) {
-  await mkdir(yearPath).catch(() => {
-    throw new Error(
-      `Could not create year folder for ${year}, it is likely that you have a  file named ${year} and you should delete it`
-    );
+const run = async () => {
+  await ensureFoldersExist({
+    day,
+    year,
+    yearPath,
+    dayPath,
   });
-}
 
-if (!doesDayExist) {
-  await mkdir(dayPath);
-}
-
-const buildBoilerPlateFromDay = async (day: number, year: number) => {
-  await writeFile(
-    `${dayPath}/solution.ts`,
-    await solutionTemplate({ year, day }),
-    {
-      encoding: "utf-8",
-    }
-  );
-
-  await writeFile(
-    `${dayPath}/day-${day}.test.ts`,
-    await testTemplate({ year, day, library: "bun" }),
-    {
-      encoding: "utf-8",
-    }
-  );
-
-  await writeFile(`${dayPath}/example.txt`, "", {
-    encoding: "utf-8",
-  }).catch(() => null);
-
-  await writeFile(`${dayPath}/real.txt`, "", {
-    encoding: "utf-8",
-  }).catch(() => null);
-
-  await writeFile(
-    `${dayPath}/tsconfig.json`,
-    await tsConfigTemplate({ environment: "bun" }),
-    {
-      encoding: "utf-8",
-    }
-  ).catch(() => null);
-
-  await writeFile(
-    `${dayPath}/inputs.ts`,
-    await format(await getFileImports({ library: "bun", year, day }), {
-      parser: "typescript",
-    }),
-    {
-      encoding: "utf-8",
-    }
-  ).catch(() => null);
-
-  execSync(`$EDITOR ${dayPath}`);
+  await buildFiles({
+    day,
+    dayPath,
+    year,
+    yearPath,
+    environment: args.environment,
+  });
 };
 
-buildBoilerPlateFromDay(day, year);
+run();
